@@ -1,37 +1,35 @@
-using System;
+using System.Threading.Tasks;
 using UnityEngine;
-using Dummiesman; 
+using Dummiesman;
 
 public class LoaderModule : MonoBehaviour
 {
-    public Action<GameObject> OnLoadCompleted;
-
-    public void LoadAsset(string assetName)
+    public async Task<GameObject> LoadAssetAsync(string assetName)
     {
+        //예외처리
         if (string.IsNullOrEmpty(assetName))
         {
             Debug.LogError("잘못된 파일 경로입니다.");
-            return;
+            return null;
         }
 
-        try
+        Debug.Log("비동기 작업 시작");
+        // 비동기 작업 시작
+        async Task<GameObject> LoadAsync()
         {
-            // OBJ 파일 로드
-            GameObject loadedModel = new OBJLoader().Load(assetName);
+            return new OBJLoader().Load(assetName);
+        }
 
-            if (loadedModel != null)
-            {
-                loadedModel.transform.position = Vector3.zero; 
-                OnLoadCompleted?.Invoke(loadedModel); 
-            }
-            else
-            {
-                Debug.LogError("OBJ 로딩에 실패했습니다.");
-            }
-        }
-        catch (Exception e)
+        // 로딩 작업을 기다리고 결과 반환
+        GameObject loadedModel = await LoadAsync();
+        Debug.Log("대기 중");
+
+        if (loadedModel != null)
         {
-            Debug.LogError($"OBJ 로드 중 오류 발생: {e.Message}");
+            loadedModel.transform.position = Vector3.zero;
         }
+
+        Debug.Log("완료");
+        return loadedModel;
     }
 }

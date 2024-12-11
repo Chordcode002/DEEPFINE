@@ -12,14 +12,13 @@ public class AssetLoader : MonoBehaviour
         Load(selectedAssetName);
     }
 
-    public void Load(string assetName)
+    // 비동기 방식으로 obj 파일을 로드하는 메소드
+    public async void Load(string assetName)
     {
-        LoaderModule.OnLoadCompleted += OnLoadCompleted;
-        LoaderModule.LoadAsset(assetName);
-    }
-
-    private void OnLoadCompleted(GameObject loadedAsset)
-    {
-        loadedAsset.transform.SetParent(transform);
+        GameObject loadedAsset = await LoaderModule.LoadAssetAsync(assetName);
+        if (loadedAsset != null)
+        {
+            loadedAsset.transform.SetParent(transform);
+        }
     }
 }
