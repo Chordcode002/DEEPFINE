@@ -54,11 +54,13 @@ public class AssetLoader : MonoBehaviour
         // 로드 작업을 위한 Task 목록 생성
         List<Task<GameObject>> loadTasks = new List<Task<GameObject>>();
 
+        int count = 1;
+
         // 각 에셋에 대해 로드 작업 생성
         foreach (string assetName in assetNames)
         {
-            var i = 0;
-            loadTasks.Add(LoaderModule.LoadAssetAsync(assetName));
+            loadTasks.Add(LoaderModule.LoadAssetAsync(assetName, count));
+            count++;
         }
 
         // 모든 로드 작업이 완료될 때까지 기다림

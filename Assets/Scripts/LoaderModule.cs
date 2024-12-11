@@ -1,11 +1,16 @@
 using System.Threading.Tasks;
 using UnityEngine;
 using Dummiesman;
+using System;
+using static UnityEngine.Rendering.DebugUI.Table;
 
 public class LoaderModule : MonoBehaviour
 {
-    public async Task<GameObject> LoadAssetAsync(string assetName)
+    public Action<GameObject> OnLoadCompleted;
+
+    public async Task<GameObject> LoadAssetAsync(string assetName, int count)
     {
+
         //예외처리
         if (string.IsNullOrEmpty(assetName))
         {
@@ -13,21 +18,28 @@ public class LoaderModule : MonoBehaviour
             return null;
         }
 
+        //Debug.Log("에셋 명 : "+ assetName + " 고유번호 : " + count);
+
+        //머테리얼 경로
+        string mtlPath = assetName.Replace(".obj", ".mtl"); 
+        //Debug.Log(mtlPath);
+
         //Debug.Log("비동기 작업 시작");
         async Task<GameObject> LoadAsync()
         {
-            return new OBJLoader().Load(assetName);
+            return new OBJLoader().Load(assetName, mtlPath);
+            //return new OBJParser().Parse(assetName);
         }
 
         GameObject loadedModel = await LoadAsync();
-        //Debug.Log("대기 중");
 
         if (loadedModel != null)
         {
-            loadedModel.transform.position = Vector3.zero;
+            DateTime now = DateTime.Now;
+            loadedModel.transform.position = new Vector3(0, 0, count * 200);
+            Debug.Log("에셋 명 : " + assetName + " 출력 완료, 시간 : " + now.Millisecond);
         }
 
-        //Debug.Log("완료");
         return loadedModel;
     }
 }
