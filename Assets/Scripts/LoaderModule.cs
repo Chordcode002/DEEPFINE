@@ -13,23 +13,21 @@ public class LoaderModule : MonoBehaviour
             return null;
         }
 
-        Debug.Log("비동기 작업 시작");
-        // 비동기 작업 시작
+        //Debug.Log("비동기 작업 시작");
         async Task<GameObject> LoadAsync()
         {
             return new OBJLoader().Load(assetName);
         }
 
-        // 로딩 작업을 기다리고 결과 반환
         GameObject loadedModel = await LoadAsync();
-        Debug.Log("대기 중");
+        //Debug.Log("대기 중");
 
         if (loadedModel != null)
         {
             loadedModel.transform.position = Vector3.zero;
         }
 
-        Debug.Log("완료");
+        //Debug.Log("완료");
         return loadedModel;
     }
 }
