@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -14,32 +15,24 @@ public class AssetLoader : MonoBehaviour
     {
         //string selectedAssetName = EditorUtility.OpenFilePanel("Select obj model", "", "obj");
         List<string> selectedAssetNames = GetObjFiles("/Resources/Models");
-        //selectedAssetNames.ForEach(item => Debug.Log(item));
         Load(selectedAssetNames);
     }
 
     private List<string> GetObjFiles(string directory)
     {
-        // Resources 폴더 내의 모든 파일 가져오기 (파일 크기 기준 오름차순 정렬)
-        string[] filePaths = Directory.GetFiles(directory, "*.obj", SearchOption.AllDirectories)
-            .OrderBy(filePath => new FileInfo(filePath).Length)
-            .ToArray();
+        // 폴더 경로
+        string resourcesPath = Application.dataPath+directory;
 
-        // 파일 이름만 추출하여 리스트에 저장
-        List<string> objFiles = filePaths.ToList();
+        // 폴더 내의 모든 obj 파일 가져오기
+        string[] filePaths = Directory.GetFiles(resourcesPath, "*.obj", SearchOption.AllDirectories);
 
-        /*
-        foreach (var filePath in objFiles)
-        {
-            string fullPath = Path.Combine(Application.dataPath, directory, filePath);
-            Debug.Log($"파일 이름: {filePath}, 크기: {new FileInfo(fullPath).Length} bytes");
-        }
-        */
+        // 크기 별 오름차순 정렬
+        filePaths = filePaths.OrderBy(filePath => new FileInfo(filePath).Length).ToArray();
 
-        return objFiles;
+        return filePaths.ToList();
     }
 
-    // 비동기 방식으로 obj 파일을 로드하는 메소드
+    // 2번 문제
     /*public async void Load(string assetName)
     {
         GameObject loadedAsset = await LoaderModule.LoadAssetAsync(assetName);

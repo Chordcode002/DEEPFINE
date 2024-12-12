@@ -172,10 +172,13 @@ public class MTLLoader {
             //diffuse color
             if (splitLine[0] == "Kd" || splitLine[0] == "kd")
             {
+                //Color 막기. 현재 모델들에는 사용하지 않는 속성
+                /*
                 var currentColor = currentMaterial.GetColor("_Color");
                 var kdColor = OBJLoaderHelper.ColorFromStrArray(splitLine);
 
                 currentMaterial.SetColor("_Color", new Color(kdColor.r, kdColor.g, kdColor.b, currentColor.a));
+                */
                 continue;
             }
 
@@ -237,8 +240,10 @@ public class MTLLoader {
             //emission color
             if (splitLine[0] == "Ka" || splitLine[0] == "ka")
             {
+                /* 사용 제한
                 currentMaterial.SetColor("_EmissionColor", OBJLoaderHelper.ColorFromStrArray(splitLine, 0.05f));
                 currentMaterial.EnableKeyword("_EMISSION");
+                */
                 continue;
             }
 
@@ -258,6 +263,7 @@ public class MTLLoader {
             //alpha
             if (splitLine[0] == "d" || splitLine[0] == "Tr")
             {
+                /* 사용 제한
                 float visibility = OBJLoaderHelper.FastFloatParse(splitLine[1]);
                 
                 //tr statement is just d inverted
@@ -273,6 +279,7 @@ public class MTLLoader {
 
                     OBJLoaderHelper.EnableMaterialTransparency(currentMaterial);
                 }
+                */
                 continue;
             }
 

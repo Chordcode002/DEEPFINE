@@ -28,6 +28,7 @@ public class LoaderModule : MonoBehaviour
         async Task<GameObject> LoadAsync()
         {
             return new OBJLoader().Load(assetName, mtlPath);
+            //return await Task.Run(() => new OBJLoader().Load(assetName, mtlPath));
             //return new OBJParser().Parse(assetName);
         }
 
@@ -37,7 +38,7 @@ public class LoaderModule : MonoBehaviour
         {
             DateTime now = DateTime.Now;
             loadedModel.transform.position = new Vector3(0, 0, count * 200);
-            Debug.Log("에셋 명 : " + assetName + " 출력 완료, 시간 : " + now.Millisecond);
+            //Debug.Log("에셋 명 : " + assetName + " 출력 완료, 시간 : " + now.Millisecond);
         }
 
         return loadedModel;
