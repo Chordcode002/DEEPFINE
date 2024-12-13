@@ -1,20 +1,19 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Diagnostics;
 using System.Threading.Tasks;
-using UnityEditor;
 using UnityEngine;
+using Slider = UnityEngine.UI.Slider;
 
 public class AssetLoader : MonoBehaviour
 {
+    public Slider LoadingBar;
+
     [field: SerializeField]
     public LoaderModule LoaderModule { get; set; }
 
     private void Start()
     {
-        //string selectedAssetName = EditorUtility.OpenFilePanel("Select obj model", "", "obj");
         List<string> selectedAssetNames = GetObjFiles("/Resources/Models");
         Load(selectedAssetNames);
     }
@@ -49,19 +48,26 @@ public class AssetLoader : MonoBehaviour
         List<Task<GameObject>> loadTasks = new List<Task<GameObject>>();
 
         int count = 1;
+        float totalAssets = assetNames.Count; // 전체 에셋 개수
+        float currentProgress = 0f; // 현재까지의 총 진행 상황
 
         // 각 에셋에 대해 로드 작업 생성
         foreach (string assetName in assetNames)
         {
-            loadTasks.Add(LoaderModule.LoadAssetAsync(assetName, count));
+            loadTasks.Add(LoaderModule.LoadAssetAsync(assetName, count, 4, 5, 500f, (progress)=>
+            {
+                // LoadAssetAsync 함수에서 전달된 progress 값을 사용하지 않음
+                currentProgress += 1f / totalAssets; // 전체 태스크 개수의 역수만큼 증가
+                LoadingBar.value = currentProgress;
+            }
+            ));
             count++;
         }
 
-        // 모든 로드 작업이 완료될 때까지 기다림
+        // 모든 작업이 완료되었는지 확인
         GameObject[] loadedAssets = await Task.WhenAll(loadTasks);
-        //Task<GameObject> loadedAssets = await Task.WhenAny(loadTasks);
 
-        // 로드된 에셋들을 부모 객체에 추가
+        //만들어진 모든 어셋을 자식오브젝트로 설정
         foreach (GameObject loadedAsset in loadedAssets)
         {
             if (loadedAsset != null)
@@ -70,29 +76,4 @@ public class AssetLoader : MonoBehaviour
             }
         }
     }
-
-    /*
-    public void Load(List<string> assetNames)
-    {
-        int count = 1;
-
-        // 각 에셋에 대해 로드 작업 생성 및 실행
-        foreach (string assetName in assetNames)
-        {
-            // LoadAssetAsync의 결과를 처리하는 익명 함수 정의
-            Action<GameObject> handleLoadedObject = (loadedAsset) =>
-            {
-                if (loadedAsset != null)
-                {
-                    loadedAsset.transform.SetParent(transform);
-                }
-            };
-
-            // LoadAssetAsync 실행 및 결과 처리
-            _ = LoaderModule.LoadAssetAsync(assetName, count)
-                .ContinueWith(task => handleLoadedObject(task.Result));
-
-            count++;
-        }
-    }*/
 }

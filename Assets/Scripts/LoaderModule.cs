@@ -4,6 +4,7 @@ using Dummiesman;
 using System;
 using static UnityEngine.Rendering.DebugUI.Table;
 using System.Diagnostics;
+using UnityEditor;
 
 public class LoaderModule : MonoBehaviour
 {
@@ -77,7 +78,7 @@ public class LoaderModule : MonoBehaviour
         return loadedModel;
     }*/
 
-    public async Task<GameObject> LoadAssetAsync(string assetName, int count)
+    public async Task<GameObject> LoadAssetAsync(string assetName, int count, int rows, int cols, float spacing, Action<float> onProgress)
     {
         if (string.IsNullOrEmpty(assetName))
         {
@@ -85,23 +86,38 @@ public class LoaderModule : MonoBehaviour
             return null;
         }
 
+        string mtlPath = assetName.Replace(".obj", ".mtl");
+
         GameObject loadedModel = null;
 
         await Task.Run(async () =>
         {
+            await Task.Delay(count*500);
+
             //로드하는 부분을 
             await UnityMainThread.ExecuteInUpdate(() =>
             {
-                loadedModel = new OBJLoader().Load(assetName);
 
-                if (loadedModel != null)
+                try
                 {
-                    loadedModel.transform.position = new Vector3(0, 0, count * 200);
-                }
-            });
+                    loadedModel = new OBJLoader().Load(assetName, mtlPath);
 
-            
+                    if (loadedModel != null)
+                    {
+                        int row = (count - 1) / cols;
+                        int col = (count - 1) % cols;
+                        loadedModel.transform.position = new Vector3(col * spacing, 0, row * spacing);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    UnityEngine.Debug.LogError($"OBJ 로드 중 오류 발생: {ex.Message}");
+                }
+
+            });
         });
+
+        onProgress?.Invoke(1f);
 
         return loadedModel;
     }
