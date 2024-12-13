@@ -59,6 +59,7 @@ public class AssetLoader : MonoBehaviour
 
         // 모든 로드 작업이 완료될 때까지 기다림
         GameObject[] loadedAssets = await Task.WhenAll(loadTasks);
+        //Task<GameObject> loadedAssets = await Task.WhenAny(loadTasks);
 
         // 로드된 에셋들을 부모 객체에 추가
         foreach (GameObject loadedAsset in loadedAssets)
@@ -69,4 +70,29 @@ public class AssetLoader : MonoBehaviour
             }
         }
     }
+
+    /*
+    public void Load(List<string> assetNames)
+    {
+        int count = 1;
+
+        // 각 에셋에 대해 로드 작업 생성 및 실행
+        foreach (string assetName in assetNames)
+        {
+            // LoadAssetAsync의 결과를 처리하는 익명 함수 정의
+            Action<GameObject> handleLoadedObject = (loadedAsset) =>
+            {
+                if (loadedAsset != null)
+                {
+                    loadedAsset.transform.SetParent(transform);
+                }
+            };
+
+            // LoadAssetAsync 실행 및 결과 처리
+            _ = LoaderModule.LoadAssetAsync(assetName, count)
+                .ContinueWith(task => handleLoadedObject(task.Result));
+
+            count++;
+        }
+    }*/
 }

@@ -9,6 +9,36 @@ public class LoaderModule : MonoBehaviour
 {
     public Action<GameObject> OnLoadCompleted;
 
+    public void LoadAsset(string assetName)
+    {
+        if (string.IsNullOrEmpty(assetName))
+        {
+            UnityEngine.Debug.LogError("잘못된 파일 경로입니다.");
+            return;
+        }
+
+        try
+        {
+            // OBJ 파일 로드
+            GameObject loadedModel = new OBJLoader().Load(assetName);
+
+            if (loadedModel != null)
+            {
+                loadedModel.transform.position = Vector3.zero;
+                OnLoadCompleted?.Invoke(loadedModel);
+            }
+            else
+            {
+                UnityEngine.Debug.LogError("OBJ 로딩에 실패했습니다.");
+            }
+        }
+        catch (Exception e)
+        {
+            UnityEngine.Debug.LogError($"OBJ 로드 중 오류 발생: {e.Message}");
+        }
+    }
+
+    /*
     public async Task<GameObject> LoadAssetAsync(string assetName, int count)
     {
 
@@ -18,8 +48,6 @@ public class LoaderModule : MonoBehaviour
             UnityEngine.Debug.LogError("잘못된 파일 경로입니다.");
             return null;
         }
-
-        //Debug.Log("에셋 명 : "+ assetName + " 고유번호 : " + count);
 
         //머테리얼 경로
         string mtlPath = assetName.Replace(".obj", ".mtl");
@@ -43,9 +71,37 @@ public class LoaderModule : MonoBehaviour
         {
             DateTime now = DateTime.Now;
             loadedModel.transform.position = new Vector3(0, 0, count * 200);
-            //Debug.Log("에셋 명 : " + assetName + " 출력 완료, 시간 : " + now.Millisecond);
             UnityEngine.Debug.Log($"에셋 {assetName} 로드 시간: {stopwatch.ElapsedMilliseconds} ms");
         }
+
+        return loadedModel;
+    }*/
+
+    public async Task<GameObject> LoadAssetAsync(string assetName, int count)
+    {
+        if (string.IsNullOrEmpty(assetName))
+        {
+            UnityEngine.Debug.LogError("잘못된 파일 경로입니다.");
+            return null;
+        }
+
+        GameObject loadedModel = null;
+
+        await Task.Run(async () =>
+        {
+            //로드하는 부분을 
+            await UnityMainThread.ExecuteInUpdate(() =>
+            {
+                loadedModel = new OBJLoader().Load(assetName);
+
+                if (loadedModel != null)
+                {
+                    loadedModel.transform.position = new Vector3(0, 0, count * 200);
+                }
+            });
+
+            
+        });
 
         return loadedModel;
     }
