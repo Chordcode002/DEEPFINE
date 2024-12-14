@@ -3,11 +3,10 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
-using Slider = UnityEngine.UI.Slider;
 
 public class AssetLoader : MonoBehaviour
 {
-    public Slider LoadingBar;
+    public loadingbar loadBarCustom;
 
     [field: SerializeField]
     public LoaderModule LoaderModule { get; set; }
@@ -57,7 +56,7 @@ public class AssetLoader : MonoBehaviour
             loadTasks.Add(LoaderModule.LoadAssetAsync(assetName, count, 4, 5, 500f, (progress)=>
             {
                 currentProgress += 1f / totalAssets;
-                LoadingBar.value = currentProgress;
+                loadBarCustom.imageComp.fillAmount = currentProgress;
             }
             ));
             count++;

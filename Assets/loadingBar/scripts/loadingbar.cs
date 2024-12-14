@@ -6,8 +6,8 @@ using UnityEngine.UI;
 public class loadingbar : MonoBehaviour {
 
     private RectTransform rectComponent;
-    private Image imageComp;
-    public float speed = 0.0f;
+    public Image imageComp;
+    //public float speed = 0.0f;
    
 
     // Use this for initialization
@@ -19,6 +19,7 @@ public class loadingbar : MonoBehaviour {
 
     void Update()
     {
+        /*
         if (imageComp.fillAmount != 1f)
         {
             imageComp.fillAmount = imageComp.fillAmount + Time.deltaTime * speed;
@@ -28,6 +29,6 @@ public class loadingbar : MonoBehaviour {
         {
             imageComp.fillAmount = 0.0f;
             
-        }
+        }*/
     }
 }
