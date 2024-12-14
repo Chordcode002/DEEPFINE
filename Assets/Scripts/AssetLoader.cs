@@ -2,19 +2,54 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using UnityEditor;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class AssetLoader : MonoBehaviour
 {
     public loadingbar loadBarCustom;
+    public Button loadOneOBJButton;
+    public Button loadMultipleOBJButton;
+    public Button clearOBJButton;
 
     [field: SerializeField]
     public LoaderModule LoaderModule { get; set; }
 
     private void Start()
     {
+        //List<string> selectedAssetNames = GetObjFiles("/Resources/Models");
+        //Load(selectedAssetNames);
+    }
+
+    // 파일 창을 열고, OBJ를 선택해서 로드
+    public void LoadOneOBJ()
+    {
+        string selectedAssetName = EditorUtility.OpenFilePanel("Select obj model", "", "obj");
+        Load(selectedAssetName);
+    }
+
+    // 지정된 경로의 모든 OBJ 로드
+    public void LoadMultipleOBJ()
+    {
         List<string> selectedAssetNames = GetObjFiles("/Resources/Models");
         Load(selectedAssetNames);
+    }
+
+    // 생성되어 있는 모든 OBJ를 제거
+    public void ClearOBJ()
+    {
+        loadBarCustom.imageComp.fillAmount = 0f;
+
+        Transform[] children = GetComponentsInChildren<Transform>();
+
+        foreach (Transform child in children)
+        {
+            if (child != transform)
+            {
+                Destroy(child.gameObject);
+            }
+        }
     }
 
     private List<string> GetObjFiles(string directory)
@@ -31,6 +66,18 @@ public class AssetLoader : MonoBehaviour
         return filePaths.ToList();
     }
 
+    // 단일 OBJ를 로드
+    public void Load(string assetName)
+    {
+        LoaderModule.OnLoadCompleted += OnLoadCompleted;
+        LoaderModule.LoadAsset(assetName);
+    }
+
+    private void OnLoadCompleted(GameObject loadedAsset)
+    {
+        loadedAsset.transform.SetParent(transform);
+    }
+
     // 2번 문제
     /*public async void Load(string assetName)
     {
@@ -41,6 +88,7 @@ public class AssetLoader : MonoBehaviour
         }
     }*/
 
+    // 폴더 내의 모든 OBJ를 비동기적으로 로드
     public async void Load(List<string> assetNames)
     {
         // 로드 작업을 위한 Task 목록 생성
@@ -53,7 +101,7 @@ public class AssetLoader : MonoBehaviour
         // 각 에셋에 대해 로드 작업 생성
         foreach (string assetName in assetNames)
         {
-            loadTasks.Add(LoaderModule.LoadAssetAsync(assetName, count, 4, 5, 500f, (progress)=>
+            loadTasks.Add(LoaderModule.LoadAssetAsync(assetName, count, 4, 5, 300f, (progress)=>
             {
                 currentProgress += 1f / totalAssets;
                 loadBarCustom.imageComp.fillAmount = currentProgress;
