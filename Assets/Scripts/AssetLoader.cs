@@ -48,16 +48,15 @@ public class AssetLoader : MonoBehaviour
         List<Task<GameObject>> loadTasks = new List<Task<GameObject>>();
 
         int count = 1;
-        float totalAssets = assetNames.Count; // 전체 에셋 개수
-        float currentProgress = 0f; // 현재까지의 총 진행 상황
+        float totalAssets = assetNames.Count; 
+        float currentProgress = 0f; 
 
         // 각 에셋에 대해 로드 작업 생성
         foreach (string assetName in assetNames)
         {
             loadTasks.Add(LoaderModule.LoadAssetAsync(assetName, count, 4, 5, 500f, (progress)=>
             {
-                // LoadAssetAsync 함수에서 전달된 progress 값을 사용하지 않음
-                currentProgress += 1f / totalAssets; // 전체 태스크 개수의 역수만큼 증가
+                currentProgress += 1f / totalAssets;
                 LoadingBar.value = currentProgress;
             }
             ));

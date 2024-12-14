@@ -2,25 +2,22 @@ using System.Threading.Tasks;
 using UnityEngine;
 using Dummiesman;
 using System;
-using static UnityEngine.Rendering.DebugUI.Table;
-using System.Diagnostics;
-using UnityEditor;
 
 public class LoaderModule : MonoBehaviour
 {
     public Action<GameObject> OnLoadCompleted;
 
+    // 동기 로드
     public void LoadAsset(string assetName)
     {
         if (string.IsNullOrEmpty(assetName))
         {
-            UnityEngine.Debug.LogError("잘못된 파일 경로입니다.");
+            Debug.LogError("잘못된 파일 경로입니다.");
             return;
         }
 
         try
         {
-            // OBJ 파일 로드
             GameObject loadedModel = new OBJLoader().Load(assetName);
 
             if (loadedModel != null)
@@ -30,59 +27,21 @@ public class LoaderModule : MonoBehaviour
             }
             else
             {
-                UnityEngine.Debug.LogError("OBJ 로딩에 실패했습니다.");
+                Debug.LogError("OBJ 로딩에 실패했습니다.");
             }
         }
         catch (Exception e)
         {
-            UnityEngine.Debug.LogError($"OBJ 로드 중 오류 발생: {e.Message}");
+            Debug.LogError($"OBJ 로드 중 오류 발생: {e.Message}");
         }
     }
 
-    /*
-    public async Task<GameObject> LoadAssetAsync(string assetName, int count)
-    {
-
-        //예외처리
-        if (string.IsNullOrEmpty(assetName))
-        {
-            UnityEngine.Debug.LogError("잘못된 파일 경로입니다.");
-            return null;
-        }
-
-        //머테리얼 경로
-        string mtlPath = assetName.Replace(".obj", ".mtl");
-
-        Stopwatch stopwatch = Stopwatch.StartNew();
-
-        async Task<GameObject> LoadAsync()
-        {
-            //await Task.Delay(count * 500);
-
-            return new OBJLoader().Load(assetName, mtlPath);
-            //return await Task.Run(() => new OBJLoader().Load(assetName, mtlPath));
-            //return new OBJParser().Parse(assetName);
-        }
-
-        GameObject loadedModel = await LoadAsync();
-
-        stopwatch.Stop();
-
-        if (loadedModel != null)
-        {
-            DateTime now = DateTime.Now;
-            loadedModel.transform.position = new Vector3(0, 0, count * 200);
-            UnityEngine.Debug.Log($"에셋 {assetName} 로드 시간: {stopwatch.ElapsedMilliseconds} ms");
-        }
-
-        return loadedModel;
-    }*/
-
+    // 비동기 로드 (파일 주소, 배치를 위한 값, 배치 행, 배치 열, 배치 간격, 완료 시 로딩 게이지를 위한 콜백)
     public async Task<GameObject> LoadAssetAsync(string assetName, int count, int rows, int cols, float spacing, Action<float> onProgress)
     {
         if (string.IsNullOrEmpty(assetName))
         {
-            UnityEngine.Debug.LogError("잘못된 파일 경로입니다.");
+            Debug.LogError("잘못된 파일 경로입니다.");
             return null;
         }
 
@@ -92,9 +51,10 @@ public class LoaderModule : MonoBehaviour
 
         await Task.Run(async () =>
         {
-            await Task.Delay(count*500);
+            // 진행 상황을 명확하게 보기 위한 딜레이
+            // Task.Delay(count*500);
 
-            //로드하는 부분을 
+            // 유니티 API에 접근해야하는 부분을 메인 쓰레드에 등록
             await UnityMainThread.ExecuteInUpdate(() =>
             {
 
@@ -104,14 +64,19 @@ public class LoaderModule : MonoBehaviour
 
                     if (loadedModel != null)
                     {
+                        // 격자 모양으로 보기 좋게 배치
                         int row = (count - 1) / cols;
                         int col = (count - 1) % cols;
                         loadedModel.transform.position = new Vector3(col * spacing, 0, row * spacing);
                     }
+                    else
+                    {
+                        Debug.LogError("OBJ 로딩에 실패했습니다.");
+                    }
                 }
-                catch (Exception ex)
+                catch (Exception e)
                 {
-                    UnityEngine.Debug.LogError($"OBJ 로드 중 오류 발생: {ex.Message}");
+                    Debug.LogError($"OBJ 로드 중 오류 발생: {e.Message}");
                 }
 
             });
