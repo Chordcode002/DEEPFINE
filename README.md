@@ -25,3 +25,4 @@
 * OBJ로더로는 Dummiesman의 OBJ Loader를 사용하였습니다. 직접 OBJ 로드 하는 코드를 구현해서 하려 했으나 현재 OBJLoader는 머테리얼과 텍스쳐를 불러와주고 안정적이어서 실제 프로젝트 소스로 구현시 퀄리티를 생각한다면 OBJLoader를 사용하는 것이 더 효과적이라 사용하였습니다.
     * [링크] <https://assetstore.unity.com/packages/tools/modeling/runtime-obj-importer-49547?locale=ko-KR&srsltid=AfmBOop_0DCiI1QxjHrCmfi70VT0S2DTznWXXlq8G0hOezr6pz5oJcFk>
 * 비동기적으로 메인 쓰레드에 작업을 올리는 특성상 간혹 메인 쓰레드에 작업을 올리지 못하는 문제가 발생할 수 있습니다. 재실행해주시면 됩니다.
+* 모델의 용량과 모델링 크기가 제각각입니다. 작은 개체는 게임 씬 화면에서 잘 안보일 수 있습니다.
