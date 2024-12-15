@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -96,7 +98,10 @@ public class AssetLoader : MonoBehaviour
 
         int count = 1;
         float totalAssets = assetNames.Count; 
-        float currentProgress = 0f; 
+        float currentProgress = 0f;
+
+        Stopwatch stopwatch = new Stopwatch();
+        stopwatch.Start();
 
         // 각 에셋에 대해 로드 작업 생성
         foreach (string assetName in assetNames)
@@ -112,6 +117,9 @@ public class AssetLoader : MonoBehaviour
 
         // 모든 작업이 완료되었는지 확인
         GameObject[] loadedAssets = await Task.WhenAll(loadTasks);
+
+        stopwatch.Stop();
+        UnityEngine.Debug.Log($"로드 시간: {stopwatch.Elapsed.TotalMilliseconds} ms");
 
         //만들어진 모든 어셋을 자식오브젝트로 설정
         foreach (GameObject loadedAsset in loadedAssets)

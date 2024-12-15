@@ -52,7 +52,7 @@ public class LoaderModule : MonoBehaviour
         await Task.Run(async () =>
         {
             // 진행 상황을 명확하게 보기 위한 딜레이
-            //await Task.Delay(count*200);
+            // await Task.Delay(count*100);
 
             // 유니티 API에 접근해야하는 부분을 메인 쓰레드에 등록
             await UnityMainThread.ExecuteInUpdate(() =>
