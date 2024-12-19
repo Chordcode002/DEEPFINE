@@ -93,9 +93,6 @@ public class AssetLoader : MonoBehaviour
     // 폴더 내의 모든 OBJ를 비동기적으로 로드
     public async void Load(List<string> assetNames)
     {
-        // 로드 작업을 위한 Task 목록 생성
-        List<Task<GameObject>> loadTasks = new List<Task<GameObject>>();
-
         int count = 1;
         float totalAssets = assetNames.Count; 
         float currentProgress = 0f;
