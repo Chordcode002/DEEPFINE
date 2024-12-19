@@ -106,28 +106,23 @@ public class AssetLoader : MonoBehaviour
         // 각 에셋에 대해 로드 작업 생성
         foreach (string assetName in assetNames)
         {
-            loadTasks.Add(LoaderModule.LoadAssetAsync(assetName, count, 4, 5, 300f, (progress)=>
+            var loadTask = LoaderModule.LoadAssetAsync(assetName, count, 4, 5, 300f, (progress)=>
             {
                 currentProgress += 1f / totalAssets;
                 loadBarCustom.imageComp.fillAmount = currentProgress;
-            }
-            ));
+            });
             count++;
-        }
 
-        // 모든 작업이 완료되었는지 확인
-        GameObject[] loadedAssets = await Task.WhenAll(loadTasks);
+            // 각 작업이 완료될 때까지 기다림
+            GameObject loadedAsset = await loadTask;
 
-        stopwatch.Stop();
-        UnityEngine.Debug.Log($"로드 시간: {stopwatch.Elapsed.TotalMilliseconds} ms");
-
-        //만들어진 모든 어셋을 자식오브젝트로 설정
-        foreach (GameObject loadedAsset in loadedAssets)
-        {
             if (loadedAsset != null)
             {
                 loadedAsset.transform.SetParent(transform);
             }
         }
+
+        stopwatch.Stop();
+        UnityEngine.Debug.Log($"로드 시간: {stopwatch.Elapsed.TotalMilliseconds} ms");
     }
 }
