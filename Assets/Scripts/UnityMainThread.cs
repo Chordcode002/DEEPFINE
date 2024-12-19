@@ -19,7 +19,7 @@ public class UnityMainThread : MonoBehaviour
 
     private void Update()
     {
-        while (executionQueue.Count > 0)
+        if (executionQueue.Count > 0)
         {
             executionQueue.Dequeue().Invoke();
         }
